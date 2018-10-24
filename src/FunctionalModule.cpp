@@ -35,6 +35,7 @@ int FunctionalModule::getEarliestSourceIndex() {
   return sourceIndex;
 }
 
+
 int FunctionalModule::getEarliestHandlerIndex() {
   double minTime = -1;
   int handlerIndex = -1;
@@ -55,17 +56,13 @@ std::pair<bool, int> FunctionalModule::getEarliestEvent() {
   const int earliestSourceIndex = getEarliestSourceIndex();
   const double sourceTime = sources_[earliestSourceIndex]->getPostTime();
 
-//  const int earliestHandlerIndex = getEarliestHandlerIndex();
-//  const double handlerTime = handlers_[earliestHandlerIndex]->getFinishTime();
-  const int nextHandlerIndex = getNextHandler();
-  if (nextHandlerIndex == -1) {
-    return {true, earliestSourceIndex};
-  }
+  const int earliestHandlerIndex = getEarliestHandlerIndex();
+  const double handlerTime = handlers_[earliestHandlerIndex]->getFinishTime();
 
-  if (sourceTime < handlers_[nextHandlerIndex]->getFinishTime()) {
+  if (sourceTime < handlerTime) {
     return {true, earliestSourceIndex};
   } else {
-    return {false, nextHandlerIndex};
+    return {false, earliestHandlerIndex};
   }
 }
 
@@ -79,12 +76,39 @@ void FunctionalModule::doIteration() {
   }
 }
 
+void FunctionalModule::handleCreationOfNewApplication(const size_t &sourceGeneratedApplication) {
+  auto application = std::make_shared<Application>(sourceGeneratedApplication, sources_[sourceGeneratedApplication]->getPostTime());
+
+  const bool hasAdded = buffer_->addApplication(application);
+  if (!hasAdded) {
+    // Не добавили заявку в буфер -> заменяем заявку
+    std::shared_ptr<Application> replacedApplication = buffer_->replaceApplication(application);
+    // TODO учитываем статистику для выброшенной зявки
+  }
+  sources_[sourceGeneratedApplication]->postApplication();
+
+  // TODO Учет статистики (среднее число apps в буфере)
+}
+
 void FunctionalModule::handleEndOfHandlerWork(const size_t &handlerFinishedWork) {
   if (!buffer_->isEmpty()) {
     std::shared_ptr<Application> application = buffer_->removeApplication();
-    // Подсчитываем статистику для app
+    const int nextHandlerIndex = getNextHandler(handlers_[handlerFinishedWork]->getFinishTime());
+
+    // TODO Для учета статистики (время работы в приборе)
+    const double timeInHandler = handlers_[nextHandlerIndex]->handleApplication(handlers_[handlerFinishedWork]->getFinishTime());
   } else {
-    // Берем первую заявку от источника
+    // Берем самую ранню заявку, ищем прибор по кольцу
+    int earliestSourceIndex = getEarliestSourceIndex();
+    auto application = std::make_shared<Application>(earliestSourceIndex, sources_[earliestSourceIndex]->getPostTime());
+    buffer_->addApplication(application);
+    application = buffer_->removeApplication();
+
+    const int nextHandlerIndex = getNextHandler(application->getTimeOfCreation());
+    // TODO Для учета статистики (время работы в приборе)
+    const double timeInHandler = handlers_[nextHandlerIndex]->handleApplication(application->getTimeOfCreation());
+
+    sources_[earliestSourceIndex]->postApplication();
   }
 }
 
@@ -113,21 +137,4 @@ int FunctionalModule::getNextHandler(const double &timeNow) {
 
   return -1;
 }
-
-void FunctionalModule::handleCreationOfNewApplication(const size_t &sourceGeneratedApplication) {
-  auto application = std::make_shared<Application>(sourceGeneratedApplication, sources_[sourceGeneratedApplication]->getPostTime());
-
-  const bool hasAdded = buffer_->addApplication(application);
-  if (!hasAdded) {
-    // Не добавили заявку в буфер -> заменяем заявку
-    std::shared_ptr<Application> replacedApplication = buffer_->replaceApplication(application);
-    // учитываем статистику
-  }
-  sources_[sourceGeneratedApplication]->postApplication();
-
-  // Учет статистики (среднее число apps в буфере)
-}
-
-
-
 
