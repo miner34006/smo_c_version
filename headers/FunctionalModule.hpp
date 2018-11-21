@@ -11,6 +11,24 @@
 #include "Buffer.hpp"
 #include "Source.hpp"
 
+struct simulationData {
+  simulationData():
+    refusedAppsCount(0),
+    acceptedAppsCount(0),
+    generatedAppsCount(0)
+  {}
+
+  void cleanUp(){
+    refusedAppsCount = 0;
+    acceptedAppsCount = 0;
+    generatedAppsCount = 0;
+  }
+
+  size_t refusedAppsCount;
+  size_t acceptedAppsCount;
+  size_t generatedAppsCount;
+};
+
 class FunctionalModule {
 public:
   explicit FunctionalModule(std::vector<std::shared_ptr<Source>> sources,
@@ -25,6 +43,8 @@ private:
   std::vector<std::shared_ptr<Handler>> handlers_;
   std::shared_ptr<Buffer> buffer_;
   size_t handlerPointer_;
+
+  std::vector<simulationData> data_;
 
   int getNextHandler(const double &timeNow);
 

@@ -5,6 +5,9 @@
 #include "../headers/FunctionalModule.hpp"
 
 void FunctionalModule::cleanUp() {
+  for (auto &data : data_) {
+    data.cleanUp();
+  }
   buffer_->cleanUp();
   for (auto &source : sources_) {
     source->cleanUp();
@@ -17,8 +20,9 @@ void FunctionalModule::cleanUp() {
 }
 
 void FunctionalModule::postFirstApplications() {
-  for (auto &source : sources_) {
-    source->postApplication();
+  for (size_t i = 0; i < sources_.size(); ++i) {
+    sources_[i]->postApplication();
+    data_[i].generatedAppsCount ++;
   }
 }
 
@@ -74,33 +78,37 @@ void FunctionalModule::handleCreationOfNewApplication(const size_t &sourceGenera
   if (!hasAdded) {
     // Не добавили заявку в буфер -> заменяем заявку [Refuse strategy]
     std::shared_ptr<Application> replacedApplication = buffer_->replaceApplication(application);
+    data_[replacedApplication->getSourceIndex()].refusedAppsCount++;
     // TODO учитываем статистику для выброшенной зявки
   }
   sources_[sourceGeneratedApplication]->postApplication();
-
+  data_[sourceGeneratedApplication].generatedAppsCount ++;
   // TODO Учет статистики (среднее число apps в буфере)
 }
 
 void FunctionalModule::handleEndOfHandlerWork(const size_t &handlerFinishedWork) {
+  std::shared_ptr<Application> application;
   if (!buffer_->isEmpty()) {
-    std::shared_ptr<Application> application = buffer_->removeApplication();
-    const int nextHandlerIndex = getNextHandler(handlers_[handlerFinishedWork]->getFinishTime());
-
     // TODO Для учета статистики (время работы в приборе)
+    application = buffer_->removeApplication();
+    const int nextHandlerIndex = getNextHandler(handlers_[handlerFinishedWork]->getFinishTime());
     const double timeInHandler = handlers_[nextHandlerIndex]->handleApplication(handlers_[handlerFinishedWork]->getFinishTime());
   } else {
-    // Берем самую ранню заявку, ищем прибор по кольцу
-    int earliestSourceIndex = getEarliestSourceIndex();
-    auto application = std::make_shared<Application>(earliestSourceIndex, sources_[earliestSourceIndex]->getPostTime());
+    // TODO Для учета статистики (время работы в приборе)
+    const int earliestSourceIndex = getEarliestSourceIndex();
+    application = std::make_shared<Application>(earliestSourceIndex, sources_[earliestSourceIndex]->getPostTime());
+
     buffer_->addApplication(application);
     application = buffer_->removeApplication();
 
     const int nextHandlerIndex = getNextHandler(application->getTimeOfCreation());
-    // TODO Для учета статистики (время работы в приборе)
     const double timeInHandler = handlers_[nextHandlerIndex]->handleApplication(application->getTimeOfCreation());
 
     sources_[earliestSourceIndex]->postApplication();
+    data_[earliestSourceIndex].generatedAppsCount++;
   }
+
+  data_[application->getSourceIndex()].acceptedAppsCount++;
 }
 
 int FunctionalModule::getNextHandler(const double &timeNow) {
@@ -135,9 +143,16 @@ FunctionalModule::FunctionalModule(std::vector<std::shared_ptr<Source>> sources,
   sources_(sources),
   buffer_(buffer),
   handlers_(handlers),
-  handlerPointer_(0)
+  handlerPointer_(0),
+  data_({})
 {
   cleanUp();
+
+  const size_t sourcesCount = sources_.size();
+  for (size_t i = 0; i < sourcesCount; ++i) {
+    simulationData data;
+    data_.push_back(data);
+  }
 }
 
 void FunctionalModule::simulate(const size_t &steps) {
