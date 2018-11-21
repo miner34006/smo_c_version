@@ -13,7 +13,7 @@ void FunctionalModule::cleanUp() {
     handler->cleanUp();
   }
 
-  handlerPointer = 0;
+  handlerPointer_ = 0;
 }
 
 void FunctionalModule::postFirstApplications() {
@@ -66,22 +66,13 @@ std::pair<bool, int> FunctionalModule::getEarliestEvent() {
   }
 }
 
-void FunctionalModule::doIteration() {
-  std::pair<bool, int> earliestEvent = getEarliestEvent();
-
-  if (earliestEvent.first) {
-    handleCreationOfNewApplication(earliestEvent.second);
-  } else {
-    handleEndOfHandlerWork(earliestEvent.second);
-  }
-}
-
 void FunctionalModule::handleCreationOfNewApplication(const size_t &sourceGeneratedApplication) {
   auto application = std::make_shared<Application>(sourceGeneratedApplication, sources_[sourceGeneratedApplication]->getPostTime());
 
+  // Add application to buffer [Add in buffer behavior]
   const bool hasAdded = buffer_->addApplication(application);
   if (!hasAdded) {
-    // Не добавили заявку в буфер -> заменяем заявку
+    // Не добавили заявку в буфер -> заменяем заявку [Refuse strategy]
     std::shared_ptr<Application> replacedApplication = buffer_->replaceApplication(application);
     // TODO учитываем статистику для выброшенной зявки
   }
@@ -113,28 +104,57 @@ void FunctionalModule::handleEndOfHandlerWork(const size_t &handlerFinishedWork)
 }
 
 int FunctionalModule::getNextHandler(const double &timeNow) {
-  for (size_t i = handlerPointer; i < handlers_.size(); i++) {
+  for (size_t i = handlerPointer_; i < handlers_.size(); i++) {
     if (!handlers_[i]->isWorking(timeNow)) {
       if (i == handlers_.size()) {
-        handlerPointer = 0;
+        handlerPointer_ = 0;
       } else {
-        handlerPointer = i + 1;
+        handlerPointer_ = i + 1;
       }
       return static_cast<int>(i);
     }
   }
 
-  for (size_t i = 0; i < handlerPointer; i++) {
+  for (size_t i = 0; i < handlerPointer_; i++) {
     if (!handlers_[i]->isWorking(timeNow)) {
       if (i == handlers_.size()) {
-        handlerPointer = 0;
+        handlerPointer_ = 0;
       } else {
-        handlerPointer = i + 1;
+        handlerPointer_ = i + 1;
       }
       return static_cast<int>(i);
     }
   }
 
   return -1;
+}
+
+FunctionalModule::FunctionalModule(std::vector<std::shared_ptr<Source>> sources,
+                                   std::shared_ptr<Buffer> buffer,
+                                   std::vector<std::shared_ptr<Handler>> handlers):
+  sources_(sources),
+  buffer_(buffer),
+  handlers_(handlers),
+  handlerPointer_(0)
+{
+  cleanUp();
+}
+
+void FunctionalModule::simulate(const size_t &steps) {
+  cleanUp();
+  postFirstApplications();
+  for (int i = 0; i < steps; ++i) {
+    simulationStep();
+  }
+}
+
+void FunctionalModule::simulationStep() {
+  std::pair<bool, int> earliestEvent = getEarliestEvent();
+
+  if (earliestEvent.first) {
+    handleCreationOfNewApplication(earliestEvent.second);
+  } else {
+    handleEndOfHandlerWork(earliestEvent.second);
+  }
 }
 

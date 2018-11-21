@@ -13,23 +13,18 @@
 
 class FunctionalModule {
 public:
-  FunctionalModule(const size_t &handlersCount, const size_t &sourcesCount);
-  void doIteration();
+  explicit FunctionalModule(std::vector<std::shared_ptr<Source>> sources,
+                   std::shared_ptr<Buffer> buffer,
+                   std::vector<std::shared_ptr<Handler>> handlers);
+  void simulate(const size_t &steps);
+  void simulationStep();
   void cleanUp();
 
-
 private:
-  std::vector<std::shared_ptr<Handler>> handlers_;
   std::vector<std::shared_ptr<Source>> sources_;
+  std::vector<std::shared_ptr<Handler>> handlers_;
   std::shared_ptr<Buffer> buffer_;
-
-  size_t handlerPointer;
-
-  // TODO add stats
-
-  void createHandlers(const size_t &count);
-  void createSources(const size_t &count);
-  void createBuffer();
+  size_t handlerPointer_;
 
   int getNextHandler(const double &timeNow);
 
