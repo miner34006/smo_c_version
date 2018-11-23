@@ -3,7 +3,8 @@
 //
 
 #include <stdexcept>
-#include "../headers/TimeBehaviour.hpp"
+
+#include "TimeBehaviour.hpp"
 
 double ExponentialTimeBehavior::generateTime(const double &intensity) {
   // TODO: add time generation strategy

@@ -10,10 +10,11 @@
 
 #include "AdditionStrategy.hpp"
 
+
 class FreeAddition: public AdditionStrategy {
 public:
-  bool addApplication(std::vector<std::shared_ptr<Application>> &applications,
-                      const std::shared_ptr<Application> &applicationToAdd);
+  bool addApplication(application_vector &applications,
+                      const application_ptr &applicationToAdd);
 };
 
 

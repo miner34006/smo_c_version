@@ -7,11 +7,16 @@
 
 #include <vector>
 #include <memory>
-#include "Application.hpp"
+
+#include <core/src/application/Application.hpp>
+
+class SelectionStrategy;
+
+using selection_strategy_ptr = std::shared_ptr<SelectionStrategy>;
 
 class SelectionStrategy {
 public:
-  virtual std::shared_ptr<Application> removeApplication(std::vector<std::shared_ptr<Application>> &applications) = 0;
+  virtual application_ptr removeApplication(application_vector &applications) = 0;
 };
 
 #endif //SMO_SELECTIONSTRATEGY_HPP

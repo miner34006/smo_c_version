@@ -2,9 +2,9 @@
 // Created by Богдан Полянок on 21.09.2018.
 //
 
-#include "../headers/Source.hpp"
+#include "Source.hpp"
 
-Source::Source(const double &intensity, const std::shared_ptr<TimeBehaviour> &timeBehaviour):
+Source::Source(const double &intensity, const time_beh_ptr &timeBehaviour):
   postTime_(0),
   intensity_(intensity),
   timeBehaviour_(timeBehaviour)

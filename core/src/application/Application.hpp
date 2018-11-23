@@ -7,6 +7,12 @@
 
 #include <memory>
 
+#include <vector>
+
+class Application;
+using application_ptr = std::shared_ptr<Application>;
+using application_vector = std::vector<application_ptr>;
+
 class Application {
 public:
   Application(const size_t &sourceNumber, const double &timeOfCreation);
