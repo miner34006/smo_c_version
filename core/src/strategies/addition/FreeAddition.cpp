@@ -2,10 +2,10 @@
 // Created by Богдан Полянок on 05.10.2018.
 //
 
-#include "../headers/FreeAddition.hpp"
+#include "FreeAddition.hpp"
 
-bool FreeAddition::addApplication(std::vector<std::shared_ptr<Application>> &applications,
-                                  const std::shared_ptr<Application> &applicationToAdd)
+bool FreeAddition::addApplication(application_vector &applications,
+                                  const application_ptr &applicationToAdd)
 {
   for (auto &application : applications) {
     if (application == nullptr) {

@@ -7,9 +7,12 @@
 
 #include <memory>
 
-#include "Handler.hpp"
-#include "Buffer.hpp"
-#include "Source.hpp"
+#include <core/src/source/Source.hpp>
+
+#include <core/src/handler/Handler.hpp>
+
+#include <core/src/buffer/Buffer.hpp>
+
 
 struct simulationData {
   simulationData():
@@ -31,17 +34,17 @@ struct simulationData {
 
 class FunctionalModule {
 public:
-  explicit FunctionalModule(std::vector<std::shared_ptr<Source>> sources,
-                   std::shared_ptr<Buffer> buffer,
-                   std::vector<std::shared_ptr<Handler>> handlers);
+  explicit FunctionalModule(source_vector sources,
+                   buffer_ptr buffer,
+                   handlers_vector handlers);
   void simulate(const size_t &steps);
   void simulationStep();
   void cleanUp();
 
 private:
-  std::vector<std::shared_ptr<Source>> sources_;
-  std::vector<std::shared_ptr<Handler>> handlers_;
-  std::shared_ptr<Buffer> buffer_;
+  source_vector sources_;
+  handlers_vector handlers_;
+  buffer_ptr buffer_;
   size_t handlerPointer_;
 
   std::vector<simulationData> data_;

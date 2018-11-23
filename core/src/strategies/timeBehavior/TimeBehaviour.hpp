@@ -9,6 +9,10 @@
 #include <cstdlib>
 #include <ctime>
 #include <cmath>
+#include <memory>
+
+class TimeBehaviour;
+using time_beh_ptr = std::shared_ptr<TimeBehaviour>;
 
 class TimeBehaviour {
 public:

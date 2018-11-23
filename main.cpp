@@ -1,12 +1,10 @@
-#include <iostream>
-#include <vector>
+#include "gui/mainwindow.h"
+#include <QApplication>
 
-int main() {
-
-  std::vector<std::shared_ptr<int*>> myVector;
-  myVector.resize(2);
-
-  std::cout << myVector.size();
-
-  return 0;
+int main(int argc, char *argv[])
+{
+    QApplication a(argc, argv);
+    MainWindow w;
+    w.show();
+    return a.exec();
 }

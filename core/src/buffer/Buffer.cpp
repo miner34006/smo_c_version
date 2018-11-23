@@ -2,10 +2,10 @@
 // Created by Богдан Полянок on 23.09.2018.
 //
 
-#include "../headers/Buffer.hpp"
+#include "Buffer.hpp"
 
-Buffer::Buffer(const std::shared_ptr<SelectionStrategy> &selectionStrategy,
-               const std::shared_ptr<AdditionStrategy> &additionStrategy,
+Buffer::Buffer(const selection_strategy_ptr &selectionStrategy,
+               const addition_strategy_ptr &additionStrategy,
                const size_t &bufferSize):
   selectionStrategy_(selectionStrategy),
   additionStrategy_(additionStrategy),
@@ -21,7 +21,7 @@ Buffer::Buffer(const std::shared_ptr<SelectionStrategy> &selectionStrategy,
   applications_.resize(bufferSize, nullptr);
 }
 
-bool Buffer::addApplication(const std::shared_ptr<Application> &application) {
+bool Buffer::addApplication(const application_ptr &application) {
   const bool successAddition = additionStrategy_->addApplication(applications_, application);
   if (successAddition) {
     freeSlots_--;
@@ -29,8 +29,8 @@ bool Buffer::addApplication(const std::shared_ptr<Application> &application) {
   return successAddition;
 }
 
-std::shared_ptr<Application> Buffer::removeApplication() {
-  const std::shared_ptr<Application> removedApplication = selectionStrategy_->removeApplication(applications_);
+application_ptr Buffer::removeApplication() {
+  const application_ptr removedApplication = selectionStrategy_->removeApplication(applications_);
   if (removedApplication != nullptr) {
     freeSlots_++;
   }
@@ -72,7 +72,7 @@ size_t Buffer::getApplicationQuantity(const size_t &sourceIndex) const {
   return applicationQuantity;
 }
 
-std::shared_ptr<Application> Buffer::replaceApplication(const std::shared_ptr<Application> &applicationToInsert) {
+application_ptr Buffer::replaceApplication(const application_ptr &applicationToInsert) {
   if (! isFull()) {
     throw std::logic_error("Buffer is not full, use addAplication() instead replaceApplication()");
   }
@@ -86,7 +86,7 @@ std::shared_ptr<Application> Buffer::replaceApplication(const std::shared_ptr<Ap
     }
   }
 
-  std::shared_ptr<Application> applicationToReturn = applications_[lastApplicationIndex];
+  application_ptr applicationToReturn = applications_[lastApplicationIndex];
   applications_[lastApplicationIndex] = applicationToInsert;
 
   return applicationToReturn;

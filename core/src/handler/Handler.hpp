@@ -7,12 +7,17 @@
 
 #include <memory>
 #include <stdexcept>
+#include <vector>
 
-#include "TimeBehaviour.hpp"
+#include <core/src/strategies/timeBehavior/TimeBehaviour.hpp>
+
+class Handler;
+using handler_ptr = std::shared_ptr<Handler>;
+using handlers_vector = std::vector<handler_ptr>;
 
 class Handler {
 public:
-  Handler(const double &intensity, const std::shared_ptr<TimeBehaviour> &timeBehaviour);
+  Handler(const double &intensity, const time_beh_ptr &timeBehaviour);
 
   double getFinishTime() const noexcept;
   void setIntensity(const double &intensity);
@@ -23,7 +28,7 @@ public:
 private:
   double finishTime_;
   double intensity_;
-  std::shared_ptr<TimeBehaviour> timeBehaviour_;
+  time_beh_ptr timeBehaviour_;
 };
 
 #endif //SMO_HANDLER_HPP

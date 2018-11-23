@@ -2,7 +2,7 @@
 // Created by Богдан Полянок on 05.10.2018.
 //
 
-#include "../headers/FunctionalModule.hpp"
+#include "FunctionalModule.hpp"
 
 void FunctionalModule::cleanUp() {
   for (auto &data : data_) {
@@ -77,7 +77,7 @@ void FunctionalModule::handleCreationOfNewApplication(const size_t &sourceGenera
   const bool hasAdded = buffer_->addApplication(application);
   if (!hasAdded) {
     // Не добавили заявку в буфер -> заменяем заявку [Refuse strategy]
-    std::shared_ptr<Application> replacedApplication = buffer_->replaceApplication(application);
+    application_ptr replacedApplication = buffer_->replaceApplication(application);
     data_[replacedApplication->getSourceIndex()].refusedAppsCount++;
     // TODO учитываем статистику для выброшенной зявки
   }
@@ -87,7 +87,7 @@ void FunctionalModule::handleCreationOfNewApplication(const size_t &sourceGenera
 }
 
 void FunctionalModule::handleEndOfHandlerWork(const size_t &handlerFinishedWork) {
-  std::shared_ptr<Application> application;
+  application_ptr application;
   if (!buffer_->isEmpty()) {
     // TODO Для учета статистики (время работы в приборе)
     application = buffer_->removeApplication();
@@ -137,9 +137,9 @@ int FunctionalModule::getNextHandler(const double &timeNow) {
   return -1;
 }
 
-FunctionalModule::FunctionalModule(std::vector<std::shared_ptr<Source>> sources,
-                                   std::shared_ptr<Buffer> buffer,
-                                   std::vector<std::shared_ptr<Handler>> handlers):
+FunctionalModule::FunctionalModule(source_vector sources,
+                                   buffer_ptr buffer,
+                                   handlers_vector handlers):
   sources_(sources),
   buffer_(buffer),
   handlers_(handlers),

@@ -8,11 +8,17 @@
 #include <memory>
 #include <stdexcept>
 
-#include "TimeBehaviour.hpp"
+#include <core/src/strategies/timeBehavior/TimeBehaviour.hpp>
+
+#include <vector>
+
+class Source;
+using source_ptr = std::shared_ptr<Source>;
+using source_vector = std::vector<source_ptr>;
 
 class Source {
 public:
-  Source(const double &intensity, const std::shared_ptr<TimeBehaviour> &timeBehaviour);
+  Source(const double &intensity, const time_beh_ptr &timeBehaviour);
 
   double getPostTime() const noexcept;
   void setIntensity(const double &intensity);
@@ -22,7 +28,7 @@ public:
 private:
   double postTime_;
   double intensity_;
-  std::shared_ptr<TimeBehaviour> timeBehaviour_;
+  time_beh_ptr timeBehaviour_;
 };
 
 #endif //SMO_SOURCE_HPP

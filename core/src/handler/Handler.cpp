@@ -2,7 +2,7 @@
 // Created by Богдан Полянок on 21.09.2018.
 //
 
-#include "../headers/Handler.hpp"
+#include "Handler.hpp"
 
 Handler::Handler(const double &intensity, const std::shared_ptr<TimeBehaviour> &timeBehaviour):
   finishTime_(0),

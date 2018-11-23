@@ -2,7 +2,7 @@
 // Created by Богдан Полянок on 21.09.2018.
 //
 
-#include "../headers/Application.hpp"
+#include "Application.hpp"
 
 Application::Application(const size_t &sourceNumber, const double &timeOfCreation):
   sourceNumber_(sourceNumber),
