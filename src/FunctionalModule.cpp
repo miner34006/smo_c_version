@@ -5,9 +5,7 @@
 #include "../headers/FunctionalModule.hpp"
 
 void FunctionalModule::cleanUp() {
-  for (auto &data : data_) {
-    data.cleanUp();
-  }
+  data_.cleanUp();
   buffer_->cleanUp();
   for (auto &source : sources_) {
     source->cleanUp();
@@ -22,7 +20,7 @@ void FunctionalModule::cleanUp() {
 void FunctionalModule::postFirstApplications() {
   for (size_t i = 0; i < sources_.size(); ++i) {
     sources_[i]->postApplication();
-    data_[i].generatedAppsCount ++;
+    data_.sourcesData[i].generatedAppsCount ++;
   }
 }
 
@@ -78,11 +76,11 @@ void FunctionalModule::handleCreationOfNewApplication(const size_t &sourceGenera
   if (!hasAdded) {
     // Не добавили заявку в буфер -> заменяем заявку [Refuse strategy]
     std::shared_ptr<Application> replacedApplication = buffer_->replaceApplication(application);
-    data_[replacedApplication->getSourceIndex()].refusedAppsCount++;
+    data_.sourcesData[replacedApplication->getSourceIndex()].refusedAppsCount++;
     // TODO учитываем статистику для выброшенной зявки
   }
   sources_[sourceGeneratedApplication]->postApplication();
-  data_[sourceGeneratedApplication].generatedAppsCount ++;
+  data_.sourcesData[sourceGeneratedApplication].generatedAppsCount ++;
   // TODO Учет статистики (среднее число apps в буфере)
 }
 
@@ -105,10 +103,10 @@ void FunctionalModule::handleEndOfHandlerWork(const size_t &handlerFinishedWork)
     const double timeInHandler = handlers_[nextHandlerIndex]->handleApplication(application->getTimeOfCreation());
 
     sources_[earliestSourceIndex]->postApplication();
-    data_[earliestSourceIndex].generatedAppsCount++;
+    data_.sourcesData[earliestSourceIndex].generatedAppsCount++;
   }
 
-  data_[application->getSourceIndex()].acceptedAppsCount++;
+  data_.sourcesData[application->getSourceIndex()].acceptedAppsCount++;
 }
 
 int FunctionalModule::getNextHandler(const double &timeNow) {
@@ -144,15 +142,9 @@ FunctionalModule::FunctionalModule(std::vector<std::shared_ptr<Source>> sources,
   buffer_(buffer),
   handlers_(handlers),
   handlerPointer_(0),
-  data_({})
+  data_(sources.size(), handlers.size())
 {
   cleanUp();
-
-  const size_t sourcesCount = sources_.size();
-  for (size_t i = 0; i < sourcesCount; ++i) {
-    simulationData data;
-    data_.push_back(data);
-  }
 }
 
 void FunctionalModule::simulate(const size_t &steps) {

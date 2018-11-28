@@ -15,8 +15,8 @@ int main() {
 
   std::shared_ptr<TimeBehaviour> exponentialTimeGenerator = std::make_shared<ExponentialTimeBehavior>();
 
-  const double a = 0;
-  const double b = 0.1;
+  const double a = 1;
+  const double b = 3;
   std::shared_ptr<TimeBehaviour> infiniteUniformTimeGenerator = std::make_shared<InfiniteUniformTimeBehavior>(a, b);
 
   double intensity = 3.0;
@@ -38,13 +38,13 @@ int main() {
   std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(selectionStrategy, additionStrategy, bufferSize);
 
   FunctionalModule functionalModule(sources, buffer, handlers);
-  functionalModule.simulate(1000);
+  functionalModule.simulate(9999);
 
   for (size_t i = 0; i < sources.size(); ++i) {
     std::cout << "Stats for " << i << " source:\n";
-    std::cout << "\t generatedAppsCount = " << functionalModule.data_[i].generatedAppsCount << '\n';
-    std::cout << "\t refusedAppsCount = " << functionalModule.data_[i].refusedAppsCount << '\n';
-    std::cout << "\t acceptedAppsCount = " << functionalModule.data_[i].acceptedAppsCount << '\n';
+    std::cout << "\t generatedAppsCount = " << functionalModule.data_.sourcesData[i].generatedAppsCount << '\n';
+    std::cout << "\t refusedAppsCount = " << functionalModule.data_.sourcesData[i].refusedAppsCount << '\n';
+    std::cout << "\t acceptedAppsCount = " << functionalModule.data_.sourcesData[i].acceptedAppsCount << '\n';
     std::cout << '\n';
   }
   return 0;
