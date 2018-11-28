@@ -9,7 +9,7 @@
 
 class RingSelection: public SelectionStrategy {
 public:
-  explicit RingSelection(const size_t &elementPointer);
+  explicit RingSelection();
   std::shared_ptr<Application> removeApplication(std::vector<std::shared_ptr<Application>> &applications);
 
 private:

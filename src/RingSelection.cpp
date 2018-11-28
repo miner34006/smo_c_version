@@ -4,7 +4,7 @@
 
 #include "../headers/RingSelection.hpp"
 
-RingSelection::RingSelection(const size_t &elementPointer):
+RingSelection::RingSelection():
   elementPointer_(0)
 {}
 

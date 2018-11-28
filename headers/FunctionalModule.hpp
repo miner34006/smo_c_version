@@ -38,13 +38,15 @@ public:
   void simulationStep();
   void cleanUp();
 
+  std::vector<simulationData> data_;
+
 private:
   std::vector<std::shared_ptr<Source>> sources_;
   std::vector<std::shared_ptr<Handler>> handlers_;
   std::shared_ptr<Buffer> buffer_;
   size_t handlerPointer_;
 
-  std::vector<simulationData> data_;
+
 
   int getNextHandler(const double &timeNow);
 

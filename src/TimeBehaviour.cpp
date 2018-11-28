@@ -11,19 +11,30 @@ double ExponentialTimeBehavior::generateTime(const double &intensity) {
     throw std::invalid_argument("Intensity should be > 0");
   }
   const double randomValue = ((double) std::rand() / (RAND_MAX));
-  return std::log(1  + std::exp(-intensity * randomValue)) / -intensity;
+  return 1 - std::exp(-(randomValue / intensity));
 }
 
 double InfiniteUniformTimeBehavior::generateTime(const double &intensity) {
-  // TODO: add time generation strategy
   if (intensity < 0) {
     throw std::invalid_argument("Intensity should be > 0");
   }
-  const double randomValue = ((double) std::rand() / (RAND_MAX));
-  return 0;
+  double randomValue = ((double) std::rand() / (RAND_MAX));
+
+  double Fx = 0;
+  if ((randomValue >= a_) and (randomValue < b_)) {
+    Fx = a_ + randomValue * (b_ - a_);
+  } else if (randomValue >= b_) {
+    Fx = 1;
+  }
+
+  return Fx * (b_ - a_) + a_;
 }
 
 InfiniteUniformTimeBehavior::InfiniteUniformTimeBehavior(const double &a, const double &b):
   a_(a),
   b_(b)
-{}
+{
+  if (b < a){
+    throw std::invalid_argument("b should be more than a");
+  }
+}
