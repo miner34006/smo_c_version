@@ -6,7 +6,6 @@
 #include "../headers/TimeBehaviour.hpp"
 
 double ExponentialTimeBehavior::generateTime(const double &intensity) {
-  // TODO: add time generation strategy
   if (intensity < 0) {
     throw std::invalid_argument("Intensity should be > 0");
   }
@@ -19,15 +18,7 @@ double InfiniteUniformTimeBehavior::generateTime(const double &intensity) {
     throw std::invalid_argument("Intensity should be > 0");
   }
   double randomValue = ((double) std::rand() / (RAND_MAX));
-
-  double Fx = 0;
-  if ((randomValue >= a_) and (randomValue < b_)) {
-    Fx = a_ + randomValue * (b_ - a_);
-  } else if (randomValue >= b_) {
-    Fx = 1;
-  }
-
-  return Fx * (b_ - a_) + a_;
+  return a_ + randomValue * (b_ - a_);
 }
 
 InfiniteUniformTimeBehavior::InfiniteUniformTimeBehavior(const double &a, const double &b):

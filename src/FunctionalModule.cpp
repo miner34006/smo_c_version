@@ -62,8 +62,10 @@ std::pair<bool, int> FunctionalModule::getEarliestEvent() {
   const double handlerTime = handlers_[earliestHandlerIndex]->getFinishTime();
 
   if (sourceTime < handlerTime) {
+    data_.timeNow = sourceTime;
     return {true, earliestSourceIndex};
   } else {
+    data_.timeNow = handlerTime;
     return {false, earliestHandlerIndex};
   }
 }
@@ -77,7 +79,7 @@ void FunctionalModule::handleCreationOfNewApplication(const size_t &sourceGenera
     // Не добавили заявку в буфер -> заменяем заявку [Refuse strategy]
     std::shared_ptr<Application> replacedApplication = buffer_->replaceApplication(application);
     data_.sourcesData[replacedApplication->getSourceIndex()].refusedAppsCount++;
-    // TODO учитываем статистику для выброшенной зявки
+    // TODO учитываем статистику для выброшенной зявки (а надо ли????????)
   }
   sources_[sourceGeneratedApplication]->postApplication();
   data_.sourcesData[sourceGeneratedApplication].generatedAppsCount ++;
@@ -91,6 +93,10 @@ void FunctionalModule::handleEndOfHandlerWork(const size_t &handlerFinishedWork)
     application = buffer_->removeApplication();
     const int nextHandlerIndex = getNextHandler(handlers_[handlerFinishedWork]->getFinishTime());
     const double timeInHandler = handlers_[nextHandlerIndex]->handleApplication(handlers_[handlerFinishedWork]->getFinishTime());
+
+    data_.sourcesData[application->getSourceIndex()].handlingTime += timeInHandler;
+    data_.sourcesData[application->getSourceIndex()].bufferingTime += (handlers_[handlerFinishedWork]->getFinishTime() - application->getTimeOfCreation());
+
   } else {
     // TODO Для учета статистики (время работы в приборе)
     const int earliestSourceIndex = getEarliestSourceIndex();
@@ -101,6 +107,9 @@ void FunctionalModule::handleEndOfHandlerWork(const size_t &handlerFinishedWork)
 
     const int nextHandlerIndex = getNextHandler(application->getTimeOfCreation());
     const double timeInHandler = handlers_[nextHandlerIndex]->handleApplication(application->getTimeOfCreation());
+
+    data_.sourcesData[application->getSourceIndex()].bufferingTime += 0;
+    data_.sourcesData[application->getSourceIndex()].handlingTime += timeInHandler;
 
     sources_[earliestSourceIndex]->postApplication();
     data_.sourcesData[earliestSourceIndex].generatedAppsCount++;

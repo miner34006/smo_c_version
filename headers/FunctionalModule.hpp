@@ -79,11 +79,11 @@ struct simulationData {
   }
 
   double getProbabilityOfFailure(const size_t& sourceIndex) {
-    return sourcesData[sourceIndex].refusedAppsCount / sourcesData[sourceIndex].generatedAppsCount;
+    return (double)sourcesData[sourceIndex].refusedAppsCount / sourcesData[sourceIndex].generatedAppsCount;
   }
 
   double getEmploymentRate(const size_t& handlerIndex) {
-    return handlersData[handlerIndex].workingTime / timeNow;
+    return (handlersData[handlerIndex].workingTime / timeNow) * 100;
   }
 
   std::vector<sourceData> sourcesData;

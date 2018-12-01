@@ -6,7 +6,6 @@
 #include "headers/Buffer.hpp"
 #include "headers/FunctionalModule.hpp"
 #include "headers/RingSelection.hpp"
-#include "headers/TimeBehaviour.hpp"
 #include "headers/FreeAddition.hpp"
 
 
@@ -15,8 +14,8 @@ int main() {
 
   std::shared_ptr<TimeBehaviour> exponentialTimeGenerator = std::make_shared<ExponentialTimeBehavior>();
 
-  const double a = 1;
-  const double b = 3;
+  const double a = 0;
+  const double b = 1;
   std::shared_ptr<TimeBehaviour> infiniteUniformTimeGenerator = std::make_shared<InfiniteUniformTimeBehavior>(a, b);
 
   double intensity = 3.0;
@@ -26,7 +25,7 @@ int main() {
     std::make_shared<Source>(1, exponentialTimeGenerator),
   };
 
-  intensity = 1;
+  intensity = 2;
   std::vector<std::shared_ptr<Handler>> handlers = {
     std::make_shared<Handler>(intensity, infiniteUniformTimeGenerator),
     std::make_shared<Handler>(intensity, infiniteUniformTimeGenerator),
@@ -45,6 +44,11 @@ int main() {
     std::cout << "\t generatedAppsCount = " << functionalModule.data_.sourcesData[i].generatedAppsCount << '\n';
     std::cout << "\t refusedAppsCount = " << functionalModule.data_.sourcesData[i].refusedAppsCount << '\n';
     std::cout << "\t acceptedAppsCount = " << functionalModule.data_.sourcesData[i].acceptedAppsCount << '\n';
+    std::cout << "\t getProbabilityOfFailure = " << functionalModule.data_.getProbabilityOfFailure(i) << '\n';
+    std::cout << "\t averageTimeInSystem = " << functionalModule.data_.getAverageTimeInSystem(i) << '\n';
+    std::cout << "\t averageHandlingTime = " << functionalModule.data_.getAverageHandlingTime(i) << '\n';
+    std::cout << "\t averageBufferingTime = " << functionalModule.data_.getAverageBufferingTime(i) << '\n';
+
     std::cout << '\n';
   }
   return 0;
