@@ -6,6 +6,7 @@
 #define SMO_FUNCTIONALMODULE_HPP
 
 #include <memory>
+#include <iostream>
 
 #include "Handler.hpp"
 #include "Buffer.hpp"
@@ -83,7 +84,12 @@ struct simulationData {
   }
 
   double getEmploymentRate(const size_t& handlerIndex) {
-    return (handlersData[handlerIndex].workingTime / timeNow) * 100;
+    double employmentRate = handlersData[handlerIndex].workingTime / timeNow;
+    if (employmentRate > 1.0) {
+      return 1;
+    } else {
+      return employmentRate;
+    }
   }
 
   std::vector<sourceData> sourcesData;

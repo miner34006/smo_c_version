@@ -62,10 +62,8 @@ std::pair<bool, int> FunctionalModule::getEarliestEvent() {
   const double handlerTime = handlers_[earliestHandlerIndex]->getFinishTime();
 
   if (sourceTime < handlerTime) {
-    data_.timeNow = sourceTime;
     return {true, earliestSourceIndex};
   } else {
-    data_.timeNow = handlerTime;
     return {false, earliestHandlerIndex};
   }
 }
@@ -96,6 +94,7 @@ void FunctionalModule::handleEndOfHandlerWork(const size_t &handlerFinishedWork)
 
     data_.sourcesData[application->getSourceIndex()].handlingTime += timeInHandler;
     data_.sourcesData[application->getSourceIndex()].bufferingTime += (handlers_[handlerFinishedWork]->getFinishTime() - application->getTimeOfCreation());
+    data_.handlersData[nextHandlerIndex].workingTime += timeInHandler;
 
   } else {
     // TODO Для учета статистики (время работы в приборе)
@@ -110,6 +109,7 @@ void FunctionalModule::handleEndOfHandlerWork(const size_t &handlerFinishedWork)
 
     data_.sourcesData[application->getSourceIndex()].bufferingTime += 0;
     data_.sourcesData[application->getSourceIndex()].handlingTime += timeInHandler;
+    data_.handlersData[nextHandlerIndex].workingTime += timeInHandler;
 
     sources_[earliestSourceIndex]->postApplication();
     data_.sourcesData[earliestSourceIndex].generatedAppsCount++;
@@ -169,8 +169,12 @@ void FunctionalModule::simulationStep() {
 
   if (earliestEvent.first) {
     handleCreationOfNewApplication(earliestEvent.second);
+    data_.timeNow = sources_[earliestEvent.second]->getPostTime();
   } else {
     handleEndOfHandlerWork(earliestEvent.second);
+    data_.timeNow = handlers_[earliestEvent.second]->getFinishTime();
   }
+
+
 }
 

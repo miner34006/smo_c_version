@@ -15,7 +15,7 @@ int main() {
   std::shared_ptr<TimeBehaviour> exponentialTimeGenerator = std::make_shared<ExponentialTimeBehavior>();
 
   const double a = 0;
-  const double b = 1;
+  const double b = 0.1;
   std::shared_ptr<TimeBehaviour> infiniteUniformTimeGenerator = std::make_shared<InfiniteUniformTimeBehavior>(a, b);
 
   double intensity = 3.0;
@@ -25,7 +25,7 @@ int main() {
     std::make_shared<Source>(1, exponentialTimeGenerator),
   };
 
-  intensity = 2;
+  intensity = 8;
   std::vector<std::shared_ptr<Handler>> handlers = {
     std::make_shared<Handler>(intensity, infiniteUniformTimeGenerator),
     std::make_shared<Handler>(intensity, infiniteUniformTimeGenerator),
@@ -37,7 +37,7 @@ int main() {
   std::shared_ptr<Buffer> buffer = std::make_shared<Buffer>(selectionStrategy, additionStrategy, bufferSize);
 
   FunctionalModule functionalModule(sources, buffer, handlers);
-  functionalModule.simulate(9999);
+  functionalModule.simulate(999999);
 
   for (size_t i = 0; i < sources.size(); ++i) {
     std::cout << "Stats for " << i << " source:\n";
@@ -51,5 +51,11 @@ int main() {
 
     std::cout << '\n';
   }
+
+  for (size_t i = 0; i < handlers.size(); ++i) {
+    std::cout << "Stats for " << i << " handler:\n";
+    std::cout << "\t getEmploymentRate = " << functionalModule.data_.getEmploymentRate(i) << '\n';
+  }
+
   return 0;
 }
