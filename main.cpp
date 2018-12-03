@@ -14,21 +14,21 @@ int main() {
 
   std::shared_ptr<TimeBehaviour> exponentialTimeGenerator = std::make_shared<ExponentialTimeBehavior>();
 
-  const double a = 0;
-  const double b = 0.1;
+  const double a = 1;
+  const double b = 3;
   std::shared_ptr<TimeBehaviour> infiniteUniformTimeGenerator = std::make_shared<InfiniteUniformTimeBehavior>(a, b);
 
   double intensity = 3.0;
   std::vector<std::shared_ptr<Source>> sources = {
-    std::make_shared<Source>(3, exponentialTimeGenerator),
-    std::make_shared<Source>(2, exponentialTimeGenerator),
-    std::make_shared<Source>(1, exponentialTimeGenerator),
+    std::make_shared<Source>(intensity, exponentialTimeGenerator),
+    std::make_shared<Source>(intensity, exponentialTimeGenerator),
+    std::make_shared<Source>(intensity, exponentialTimeGenerator),
   };
 
   intensity = 8;
   std::vector<std::shared_ptr<Handler>> handlers = {
-    std::make_shared<Handler>(intensity, infiniteUniformTimeGenerator),
-    std::make_shared<Handler>(intensity, infiniteUniformTimeGenerator),
+    std::make_shared<Handler>(0, infiniteUniformTimeGenerator),
+    std::make_shared<Handler>(0, infiniteUniformTimeGenerator),
   };
 
   const size_t bufferSize = 5;

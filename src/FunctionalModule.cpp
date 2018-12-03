@@ -168,13 +168,31 @@ void FunctionalModule::simulationStep() {
   std::pair<bool, int> earliestEvent = getEarliestEvent();
 
   if (earliestEvent.first) {
-    handleCreationOfNewApplication(earliestEvent.second);
     data_.timeNow = sources_[earliestEvent.second]->getPostTime();
+    handleCreationOfNewApplication(earliestEvent.second);
+
   } else {
-    handleEndOfHandlerWork(earliestEvent.second);
     data_.timeNow = handlers_[earliestEvent.second]->getFinishTime();
+    handleEndOfHandlerWork(earliestEvent.second);
+
   }
+}
 
+void FunctionalModule::totalGeneratedAppsSimulation(const size_t &totalApps) {
+  cleanUp();
+  postFirstApplications();
 
+  while (true) {
+    simulationStep();
+
+    size_t apps = 0;
+    for (size_t i = 0; i < sources_.size(); ++i) {
+      apps += data_.sourcesData[i].generatedAppsCount;
+    }
+
+    if (apps >= totalApps) {
+      break;
+    }
+  }
 }
 

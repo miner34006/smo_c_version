@@ -102,15 +102,17 @@ public:
   explicit FunctionalModule(std::vector<std::shared_ptr<Source>> sources,
                    std::shared_ptr<Buffer> buffer,
                    std::vector<std::shared_ptr<Handler>> handlers);
+
+  void totalGeneratedAppsSimulation(const size_t &totalApps);
   void simulate(const size_t &steps);
   void simulationStep();
   void cleanUp();
 
   simulationData data_;
+  std::vector<std::shared_ptr<Handler>> handlers_;
 
 private:
   std::vector<std::shared_ptr<Source>> sources_;
-  std::vector<std::shared_ptr<Handler>> handlers_;
   std::shared_ptr<Buffer> buffer_;
   size_t handlerPointer_;
 
